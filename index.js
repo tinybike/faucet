@@ -33,7 +33,7 @@ app.get("/faucet/:address", function (req, res) {
         if (etherToSend.gt(new BigNumber(0))) {
             augur.rpc.raw("personal_unlockAccount", [
                 augur.coinbase,
-                fs.readFileSync(join(DATADIR, ".password")),
+                fs.readFileSync(join(DATADIR, ".password")).toString("utf8"),
                 0.5
             ], function (unlocked) {
                 console.log("unlocked:", unlocked);
