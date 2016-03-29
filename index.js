@@ -29,14 +29,13 @@ app.get("/faucet/:address", function (req, res) {
     augur.rpc.balance(address, function (balance) {
         balance = new BigNumber(balance).dividedBy(ETHER);
         var etherToSend = FREEBIE.minus(balance);
-        console.log("ether to send:", etherToSend.toFixed());
         if (etherToSend.gt(new BigNumber(0))) {
             augur.rpc.raw("personal_unlockAccount", [
                 augur.coinbase,
                 fs.readFileSync(join(DATADIR, ".password")).toString("utf8"),
-                0.5
+                0.1
             ], function (unlocked) {
-                console.log("unlocked:", unlocked);
+                if (!unlocked) return res.end("Couldn't unlock Ethereum node.");
                 augur.rpc.sendEther({
                     to: address,
                     value: etherToSend.toFixed(),
