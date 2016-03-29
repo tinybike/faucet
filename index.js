@@ -41,12 +41,14 @@ app.get("/faucet/:address", function (req, res) {
                     value: etherToSend.toFixed(),
                     from: augur.coinbase,
                     onSent: function (r) {
-                        res.end("Sent " + etherToSend.toFixed() + " ether to " + address + ".");
+                        console.log("sendEther sent:", r);
                     },
                     onSuccess: function (r) {
-                        console.log("sendEther succeeded:", r);
+                        console.log("sendEther succeeded");
+                        res.end("Sent " + etherToSend.toFixed() + " ether to " + address + ".");
                     },
                     onFailed: function (e) {
+                        console.error("sendEther failed:", e);
                         res.end("Couldn't send ether to " + address + ".");
                     }
                 });
