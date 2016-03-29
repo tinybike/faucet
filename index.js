@@ -58,7 +58,7 @@ app.get("/faucet/:address", function (req, res) {
     });
 });
 
-var server = app.listen(8081, function () {
+var server = app.listen(process.env.FAUCET_PORT || 8888, function () {
     var host = server.address().address;
     var port = server.address().port;
     console.log("Listening on %s:%s", host, port);
