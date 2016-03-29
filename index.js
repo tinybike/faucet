@@ -44,7 +44,7 @@ app.get("/faucet/:address", function (req, res) {
                         console.log("sendEther sent:", r);
                     },
                     onSuccess: function (r) {
-                        console.log("sendEther succeeded");
+                        console.log("sendEther succeeded:", r);
                         res.end("Sent " + etherToSend.toFixed() + " ether to " + address + ".");
                     },
                     onFailed: function (e) {
