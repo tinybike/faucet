@@ -1,0 +1,65 @@
+#!/usr/bin/env node
+
+"use strict";
+
+var fs = require("fs");
+var join = require("path").join;
+var express = require("express");
+var BigNumber = require("bignumber.js");
+var augur = require("augur.js");
+var abi = require("augur-abi");
+
+var FREEBIE = new BigNumber("2.5");
+var ETHER = new BigNumber(10).toPower(new BigNumber(18));
+var DATADIR = join(process.env.HOME, ".ethereum");
+
+var app = express();
+augur.connect("http://127.0.0.1:8545", join(DATADIR, "geth.ipc"));
+
+app.get("/", function (req, res) {
+    res.end("How about a free lunch?");
+});
+
+app.get("/faucet", function (req, res) {
+    res.end("How about a free lunch?");
+});
+
+app.get("/faucet/:address", function (req, res) {
+    var address = abi.format_address(req.params.address);
+    augur.rpc.balance(address, function (balance) {
+        balance = new BigNumber(balance).dividedBy(ETHER);
+        var etherToSend = FREEBIE.minus(balance);
+        console.log("ether to send:", etherToSend.toFixed());
+        if (etherToSend.gt(new BigNumber(0))) {
+            augur.rpc.raw("personal_unlockAccount", [
+                augur.coinbase,
+                fs.readFileSync(join(DATADIR, ".password")),
+                0.5
+            ], function (unlocked) {
+                console.log("unlocked:", unlocked);
+                augur.rpc.sendEther({
+                    to: address,
+                    value: etherToSend.toFixed(),
+                    from: augur.coinbase,
+                    onSent: function (r) {
+                        res.end("Sent " + etherToSend.toFixed() + " ether to " + address + ".");
+                    },
+                    onSuccess: function (r) {
+                        console.log("sendEther succeeded:", r);
+                    },
+                    onFailed: function (e) {
+                        res.end("Couldn't send ether to " + address + ".");
+                    }
+                });
+            });
+        } else {
+            res.end("Hey, you're not broke!");
+        }
+    });
+});
+
+var server = app.listen(8081, function () {
+    var host = server.address().address;
+    var port = server.address().port;
+    console.log("Listening on %s:%s", host, port);
+});
