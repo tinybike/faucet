@@ -33,7 +33,7 @@ app.get("/faucet/:address", function (req, res) {
             augur.rpc.raw("personal_unlockAccount", [
                 augur.coinbase,
                 fs.readFileSync(join(DATADIR, ".password")).toString("utf8"),
-                0.1
+                1
             ], function (unlocked) {
                 if (!unlocked) return res.end("Couldn't unlock Ethereum node.");
                 augur.rpc.sendEther({
