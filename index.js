@@ -30,10 +30,9 @@ app.get("/faucet/:address", function (req, res) {
         balance = new BigNumber(balance).dividedBy(ETHER);
         var etherToSend = FREEBIE.minus(balance);
         if (etherToSend.gt(new BigNumber(0))) {
-            augur.rpc.raw("personal_unlockAccount", [
+            augur.rpc.personal("unlockAccount", [
                 augur.coinbase,
-                fs.readFileSync(join(DATADIR, ".password")).toString("utf8"),
-                1
+                fs.readFileSync(join(DATADIR, ".password")).toString("utf8")
             ], function (unlocked) {
                 if (!unlocked) return res.end("Couldn't unlock Ethereum node.");
                 augur.rpc.sendEther({
@@ -42,6 +41,9 @@ app.get("/faucet/:address", function (req, res) {
                     from: augur.coinbase,
                     onSent: function (r) {
                         console.log("sendEther sent:", r);
+                        augur.rpc.personal("lockAccount", [augur.coinbase], function () {
+                            if (!locked) console.log("lockAccount:", locked);
+                        });
                     },
                     onSuccess: function (r) {
                         console.log("sendEther succeeded:", r);
@@ -50,6 +52,9 @@ app.get("/faucet/:address", function (req, res) {
                     onFailed: function (e) {
                         console.error("sendEther failed:", e);
                         res.end("Couldn't send ether to " + address + ".");
+                        augur.rpc.personal("lockAccount", [augur.coinbase], function () {
+                            if (!locked) console.log("lockAccount:", locked);
+                        });
                     }
                 });
             });
