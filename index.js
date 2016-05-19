@@ -41,7 +41,7 @@ app.get("/faucet/:address", function (req, res) {
                     from: augur.coinbase,
                     onSent: function (r) {
                         console.log("sendEther sent:", r);
-                        augur.rpc.personal("lockAccount", [augur.coinbase], function () {
+                        augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
                             if (!locked) console.log("lockAccount:", locked);
                         });
                     },
@@ -52,7 +52,7 @@ app.get("/faucet/:address", function (req, res) {
                     onFailed: function (e) {
                         console.error("sendEther failed:", e);
                         res.end("Couldn't send ether to " + address + ".");
-                        augur.rpc.personal("lockAccount", [augur.coinbase], function () {
+                        augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
                             if (!locked) console.log("lockAccount:", locked);
                         });
                     }
