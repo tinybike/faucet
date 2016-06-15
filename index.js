@@ -15,6 +15,7 @@ var DATADIR = join(process.env.HOME, ".ethereum");
 
 var app = express();
 augur.connect("http://127.0.0.1:8545", process.env.GETH_IPC || join(DATADIR, "geth.ipc"));
+augur.rpc.debug.broadcast = true;
 
 app.get("/", function (req, res) {
     res.end("How about a free lunch?");
@@ -52,8 +53,15 @@ app.get("/faucet/:address", function (req, res) {
                     onFailed: function (e) {
                         console.error("sendEther failed:", e);
                         res.end("Couldn't send ether to " + address + ".");
-                        augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
-                            if (!locked) console.log("lockAccount:", locked);
+                        augur.rpc.balance(augur.coinbase, function (balance) {
+                            balance = new BigNumber(balance, 16).dividedBy(ETHER);
+                            console.log("Coinbase", augur.coinbase, "balance:", balance.toFixed());
+                            console.log("Nodes:", JSON.stringify(augur.rpc.nodes));
+                            console.log("IPC: ipcpath=" + augur.rpc.ipcpath, "ipcStatus=" + augur.rpc.ipcStatus);
+                            console.log("WS: wsUrl=" + augur.rpc.wsUrl, "wsStatus=" + augur.rpc.wsStatus);
+                            augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
+                                if (!locked) console.log("lockAccount:", locked);
+                            });
                         });
                     }
                 });
