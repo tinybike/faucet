@@ -14,7 +14,11 @@ var ETHER = new BigNumber(10).toPower(new BigNumber(18));
 var DATADIR = join(process.env.HOME, ".ethereum");
 
 var app = express();
-augur.connect("http://127.0.0.1:8545", process.env.GETH_IPC || join(DATADIR, "geth.ipc"));
+augur.connect({
+    http: "http://127.0.0.1:8545",
+    ws: "http://127.0.0.1:8546",
+    ipc: process.env.GETH_IPC || join(DATADIR, "geth.ipc")
+});
 augur.rpc.debug.broadcast = true;
 
 app.get("/", function (req, res) {
