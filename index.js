@@ -14,11 +14,13 @@ var ETHER = new BigNumber(10).toPower(new BigNumber(18));
 var DATADIR = join(process.env.HOME, ".ethereum");
 
 var app = express();
-augur.connect({
+
+var connectInfo = {
     http: "http://127.0.0.1:8545",
     ws: "http://127.0.0.1:8546",
     ipc: process.env.GETH_IPC || join(DATADIR, "geth.ipc")
-});
+};
+augur.connect(connectInfo);
 augur.rpc.debug.broadcast = true;
 
 app.get("/", function (req, res) {
@@ -31,6 +33,7 @@ app.get("/faucet", function (req, res) {
 
 app.get("/faucet/:address", function (req, res) {
     var address = abi.format_address(req.params.address);
+    if (!augur.rpc.ipcpath) augur.connect(connectInfo);
     augur.rpc.balance(address, function (balance) {
         balance = new BigNumber(balance).dividedBy(ETHER);
         var etherToSend = FREEBIE.minus(balance);
