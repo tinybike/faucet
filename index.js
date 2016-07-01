@@ -50,7 +50,10 @@ app.get("/faucet/:address", function (req, res) {
                     onSent: function (r) {
                         console.log("sendEther sent:", r);
                         augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
-                            if (!locked) console.log("lockAccount:", locked);
+                            if (!locked) {
+                                console.log("lockAccount:", locked);
+                                augur.connect(connectInfo);
+                            }
                         });
                     },
                     onSuccess: function (r) {
@@ -60,6 +63,7 @@ app.get("/faucet/:address", function (req, res) {
                     onFailed: function (e) {
                         console.error("sendEther failed:", e);
                         res.end("Couldn't send ether to " + address + ".");
+                        augur.connect(connectInfo);
                         augur.rpc.balance(augur.coinbase, function (balance) {
                             balance = new BigNumber(balance, 16).dividedBy(ETHER);
                             console.log("Coinbase", augur.coinbase, "balance:", balance.toFixed());
@@ -67,7 +71,10 @@ app.get("/faucet/:address", function (req, res) {
                             console.log("IPC: ipcpath=" + augur.rpc.ipcpath, "ipcStatus=" + augur.rpc.ipcStatus);
                             console.log("WS: wsUrl=" + augur.rpc.wsUrl, "wsStatus=" + augur.rpc.wsStatus);
                             augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
-                                if (!locked) console.log("lockAccount:", locked);
+                                if (!locked) {
+                                    console.log("lockAccount:", locked);
+                                    augur.connect(connectInfo);
+                                }
                             });
                         });
                     }
