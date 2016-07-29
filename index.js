@@ -43,7 +43,7 @@ app.get("/faucet/:address", function (req, res) {
                 augur.coinbase,
                 fs.readFileSync(join(DATADIR, ".password")).toString("utf8")
             ], function (unlocked) {
-                if (!unlocked) return res.end("Couldn't unlock Ethereum node.");
+                if (unlocked && unlocked.error) return res.end("Couldn't unlock Ethereum node.");
                 augur.rpc.sendEther({
                     to: address,
                     value: etherToSend.toFixed(),
@@ -51,8 +51,8 @@ app.get("/faucet/:address", function (req, res) {
                     onSent: function (r) {
                         console.log("sendEther sent:", r);
                         augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
-                            if (!locked) {
-                                console.log("lockAccount:", locked);
+                            if (locked && locked.error) {
+                                console.error("lockAccount failed:", locked);
                                 augur.connect(connectInfo);
                             }
                         });
@@ -72,8 +72,8 @@ app.get("/faucet/:address", function (req, res) {
                             console.log("IPC: ipcpath=" + augur.rpc.ipcpath, "ipcStatus=" + augur.rpc.ipcStatus);
                             console.log("WS: wsUrl=" + augur.rpc.wsUrl, "wsStatus=" + augur.rpc.wsStatus);
                             augur.rpc.personal("lockAccount", [augur.coinbase], function (locked) {
-                                if (!locked) {
-                                    console.log("lockAccount:", locked);
+                                if (locked && locked.error) {
+                                    console.log("lockAccount failed:", locked);
                                     augur.connect(connectInfo);
                                 }
                             });
