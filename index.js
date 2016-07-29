@@ -17,11 +17,12 @@ var app = express();
 
 var connectInfo = {
     http: "http://127.0.0.1:8545",
-    ws: "http://127.0.0.1:8546",
+    ws: "ws://127.0.0.1:8546",
     ipc: process.env.GETH_IPC || join(DATADIR, "geth.ipc")
 };
 augur.connect(connectInfo);
 augur.rpc.debug.broadcast = true;
+augur.rpc.retryDroppedTxs = true;
 
 app.get("/", function (req, res) {
     res.end("How about a free lunch?");
