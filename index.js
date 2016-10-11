@@ -40,17 +40,23 @@ app.get("/faucet/:address", function (req, res) {
         req.connection.remoteAddress || 
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
-    if (blacklist[ip]) return res.end(":(");
-    if (req.params.address.length < 40) return res.end(":(");
     var curTime = new Date().getTime();
+    if (blacklist[ip]) {
+        if (curTime - blacklist[ip] < 900000) {
+            return res.end("blacklisted :(");
+        } else {
+            blacklist[ip] = false;
+        }
+    }
+    if (req.params.address.length < 40) return res.end(":(");
     var prevTime = lastReqTime[ip];
     console.log(req.params.address, ip, lastReqTime[ip], curTime - prevTime, baddies[ip]);
     lastReqTime[ip] = curTime;
-    if (prevTime && curTime - prevTime < 60000) {
+    if (prevTime && curTime - prevTime < 15000) {
         baddies[ip] = (!baddies[ip]) ? 1 : baddies[ip] + 1;
         if (baddies[ip] > 10) {
             console.log('Blacklisted IP', ip);
-            blacklist[ip] = true;
+            blacklist[ip] = curTime;
         }
         return res.end(":(");
     }
