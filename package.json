@@ -1,6 +1,6 @@
 {
   "name": "augur-faucet",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Free stuff!",
   "main": "index.js",
   "scripts": {
@@ -24,8 +24,8 @@
   },
   "homepage": "https://github.com/AugurProject/faucet#readme",
   "dependencies": {
-    "augur-abi": "0.6.3",
-    "augur.js": "2.9.13",
+    "augur-abi": "0.6.4",
+    "augur.js": "2.10.5",
     "bignumber.js": "2.3.0",
     "express": "4.13.4"
   }

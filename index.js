@@ -42,23 +42,25 @@ app.get("/faucet/:address", function (req, res) {
         req.connection.socket.remoteAddress;
     var curTime = new Date().getTime();
     if (blacklist[ip]) {
-        if (curTime - blacklist[ip] < 900000) {
+        if (curTime - blacklist[ip] < 30000) {
             return res.end("blacklisted :(");
         } else {
             blacklist[ip] = false;
         }
     }
-    if (req.params.address.length < 40) return res.end(":(");
+    if (req.params.address.length < 39) return res.end(":(");
     var prevTime = lastReqTime[ip];
     console.log(req.params.address, ip, lastReqTime[ip], curTime - prevTime, baddies[ip]);
     lastReqTime[ip] = curTime;
-    if (prevTime && curTime - prevTime < 15000) {
+    if (prevTime && curTime - prevTime < 2000) {
         baddies[ip] = (!baddies[ip]) ? 1 : baddies[ip] + 1;
         if (baddies[ip] > 10) {
             console.log('Blacklisted IP', ip);
             blacklist[ip] = curTime;
         }
         return res.end(":(");
+    } else {
+        baddies[ip] = 0;
     }
     var address = abi.format_address(req.params.address);
     if (hasAlreadySentTo[address]) return res.end("Already sent Ether to " + address);
