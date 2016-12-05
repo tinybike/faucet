@@ -25,7 +25,7 @@
   "homepage": "https://github.com/AugurProject/faucet#readme",
   "dependencies": {
     "augur-abi": "0.6.4",
-    "augur.js": "3.2.3",
+    "augur.js": "3.3.0",
     "bignumber.js": "2.3.0",
     "express": "4.13.4"
   }
