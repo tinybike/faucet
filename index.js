@@ -54,7 +54,7 @@ app.get("/faucet/:address", function (req, res) {
     lastReqTime[ip] = curTime;
     if (prevTime && curTime - prevTime < 2000) {
         baddies[ip] = (!baddies[ip]) ? 1 : baddies[ip] + 1;
-        if (baddies[ip] > 10) {
+        if (baddies[ip] > 500) {
             console.log('Blacklisted IP', ip);
             blacklist[ip] = curTime;
         }
