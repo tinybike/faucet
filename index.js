@@ -6,7 +6,7 @@ var fs = require("fs");
 var join = require("path").join;
 var express = require("express");
 var BigNumber = require("bignumber.js");
-var augur = require("augur.js");
+var augur = new (require("augur.js"))();
 var abi = require("augur-abi");
 
 var FREEBIE = new BigNumber("2.5");
